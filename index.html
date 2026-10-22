@@ -57,6 +57,70 @@
       object-fit: cover;
       border: 3px solid white;
     }
+
+    /* A small encouragement button, matched to the homepage's light-blue theme. */
+    .push-box {
+      max-width: 480px;
+      margin: 18px 0 26px;
+      padding: 17px 20px;
+      border: 1px solid #c7e4ef;
+      border-radius: 14px;
+      background: #ecf7fb;
+      box-shadow: 0 3px 12px rgba(58, 111, 131, 0.08);
+    }
+    .push-title {
+      margin: 0 0 13px;
+      font-weight: 600;
+      color: #28566a;
+    }
+    .push-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px 17px;
+    }
+    .push-button-wrap { position: relative; display: inline-block; }
+    .push-button {
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 19px;
+      background: #438fab;
+      color: #fff;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 3px 0 #2e6880;
+      transition: background 0.18s ease, transform 0.18s ease;
+    }
+    .push-button:hover { background: #327a98; transform: translateY(-1px); }
+    .push-button:active { transform: translateY(2px); box-shadow: 0 1px 0 #2e6880; }
+    .push-button:focus-visible { outline: 3px solid #28647e; outline-offset: 3px; }
+    .push-counter { color: #31596b; }
+    .push-count { font-size: 1.32em; font-variant-numeric: tabular-nums; }
+    .push-message {
+      margin: 12px 0 0;
+      min-height: 1.4em;
+      color: #3d6070;
+      font-size: 0.93em;
+    }
+    .push-note { margin: 9px 0 0; color: #71818a; font-size: 0.78em; }
+    .push-plus-one {
+      position: absolute;
+      top: -5px;
+      right: -10px;
+      color: #287998;
+      font-weight: 700;
+      pointer-events: none;
+      animation: push-rise 700ms ease-out forwards;
+    }
+    @keyframes push-rise {
+      from { opacity: 1; transform: translateY(0); }
+      to   { opacity: 0; transform: translateY(-26px); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .push-button { transition: none; }
+      .push-plus-one { animation: none; display: none; }
+    }
   </style>
 </head>
 <body>
@@ -78,6 +142,19 @@
       <p>
         我是北京大学数学系的博士生，研究方向为算数代数几何，具体涉及L函数、志村簇和Arakelov几何等领域。
       </p>
+
+      <div class="push-box">
+        <p class="push-title">给我一点数学能量吧！📚</p>
+        <div class="push-row">
+          <span class="push-button-wrap">
+            <button type="button" class="push-button" onclick="sendPush(this)">Push me! 🚀</button>
+          </span>
+          <span class="push-counter">你已为我加油 <strong class="push-count">0</strong> 次</span>
+        </div>
+        <p class="push-message" role="status" aria-live="polite">每个 Push 都是继续写下一个证明的小动力。</p>
+        <p class="push-note">计数保存在当前浏览器中。</p>
+      </div>
+
 
    <h2>个人简历</h2>
 <p>
@@ -223,6 +300,19 @@
         I am a PhD student in Mathematics at Peking University, working in arithmetic algebraic geometry,
         with a particular focus on L-functions, Shimura varieties, and Arakelov geometry.
       </p>
+
+      <div class="push-box">
+        <p class="push-title">A little motivation for the next lemma! 📚</p>
+        <div class="push-row">
+          <span class="push-button-wrap">
+            <button type="button" class="push-button" onclick="sendPush(this)">Push me! 🚀</button>
+          </span>
+          <span class="push-counter">You've pushed me <strong class="push-count">0</strong> times</span>
+        </div>
+        <p class="push-message" role="status" aria-live="polite">Every push gives me a little more mathematical energy.</p>
+        <p class="push-note">Count saved in this browser.</p>
+      </div>
+
 
   <h2>Curriculum Vitae</h2>
 <p>
@@ -371,6 +461,65 @@
       document.querySelectorAll('.lang').forEach(div => div.classList.remove('active'));
       document.querySelector('.' + lang).classList.add('active');
     }
+
+
+    // GitHub Pages serves static files: this counter is saved per browser.
+    const PUSH_STORAGE_KEY = 'ziqi-guo-encouragement-pushes-v1';
+    const encouragements = {
+      cn: [
+        'Push 收到！离下一个定理又近了一步 ✨',
+        '数学能量 +1，继续把这个 lemma 证明出来！ 💪',
+        '一个好想法也许就在下一页 📖',
+        '谢谢鼓励！继续研究 Shimura varieties 🔍',
+        '稳步推进，记得也要喝水休息 ☕'
+      ],
+      en: [
+        'Push received! One step closer to the next theorem ✨',
+        'Math energy +1. On to the next lemma! 💪',
+        'Your next idea might be on the next page 📖',
+        'Thanks! Back to Shimura varieties 🔍',
+        'Keep going — and take a tea break too ☕'
+      ]
+    };
+    function readPushCount() {
+      try {
+        const value = Number(localStorage.getItem(PUSH_STORAGE_KEY));
+        return Number.isSafeInteger(value) && value >= 0 ? value : 0;
+      } catch (_) {
+        return 0;
+      }
+    }
+    let pushCount = readPushCount();
+    function updatePushCount() {
+      document.querySelectorAll('.push-count').forEach(el => {
+        el.textContent = pushCount.toLocaleString('en-US');
+      });
+    }
+    function sendPush(button) {
+      pushCount += 1;
+      try { localStorage.setItem(PUSH_STORAGE_KEY, String(pushCount)); } catch (_) {}
+      updatePushCount();
+
+      const panel = button.closest('.push-box');
+      const lang = button.closest('.lang').classList.contains('cn') ? 'cn' : 'en';
+      const messages = encouragements[lang];
+      panel.querySelector('.push-message').textContent = messages[(pushCount - 1) % messages.length];
+
+      const plusOne = document.createElement('span');
+      plusOne.className = 'push-plus-one';
+      plusOne.textContent = '+1';
+      plusOne.setAttribute('aria-hidden', 'true');
+      const wrapper = button.closest('.push-button-wrap');
+      wrapper.appendChild(plusOne);
+      plusOne.addEventListener('animationend', () => plusOne.remove(), { once: true });
+    }
+    window.addEventListener('storage', event => {
+      if (event.key === PUSH_STORAGE_KEY) {
+        pushCount = readPushCount();
+        updatePushCount();
+      }
+    });
+    updatePushCount();
   </script>
 
 </body>
