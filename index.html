@@ -464,9 +464,9 @@
     }
 
     // 1. Deploy worker.js to a Cloudflare Worker and bind your D1 database as DB.
-    // 2. Replace the placeholder URL below with your own Worker URL (without /push).
+    // 2. The Worker URL below is configured for ziqi-push (without /push).
     // Never put a GitHub token, Cloudflare API token, or other secret here.
-    const PUSH_API_URL = 'https://YOUR-WORKER.YOUR-SUBDOMAIN.workers.dev';
+    const PUSH_API_URL = 'https://ziqi-push.1564665206.workers.dev';
     const PUSH_ENDPOINT = PUSH_API_URL.replace(/\/+$/, '') + '/push';
     const pushConfigured = /^https:\/\//.test(PUSH_API_URL)
       && !PUSH_API_URL.includes('YOUR-WORKER')
